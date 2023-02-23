@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import "package:googleapis_auth/auth_io.dart";
 import 'package:googleapis/calendar/v3.dart' hide Colors;
+import 'apicall.dart';
+import 'dart:io' show Platform ;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';  
 
 void main() {
   runApp(MaterialApp(
@@ -26,13 +30,25 @@ class _HomeState extends State<Home> {
   TextEditingController numinput = TextEditingController();
   List<Widget> textViewL = [];
 
+  DateTime dt = new DateTime(DateTime.now().year);
 
   void initState(){
     dateInput.text = "";
+    permis();
     super.initState();
 
   }
+  List<Contact>? contacts;
+  Future permis() async{
+    var status = await Permission.contacts.status;
 
+    if(status.isDenied || status.isRestricted){
+      if (await Permission.speech.isPermanentlyDenied) { openAppSettings();}
+    }
+    else{ contacts = await ContactsService.getContacts(withThumbnails: false);
+    print(contacts);}
+  }
+  
   Widget _textView(){
     return(
       Container(
@@ -49,7 +65,7 @@ class _HomeState extends State<Home> {
             ),
 )
 );}
-
+  DateTime? pickedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -67,16 +83,36 @@ class _HomeState extends State<Home> {
 
           children:<Widget> [
             SizedBox(height: 20.0,),
+            Container(  margin: EdgeInsets.only(right: 15),
+          child: Row(
+            children: <Widget>[
+            new PopupMenuButton<String>(
+                        icon: const Icon(Icons.contact_mail_sharp), // TO DO
+                        onSelected: (String value) {
+                              numinput.text = value;
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return items.map<PopupMenuItem<String>>((String value) {
+                            return new PopupMenuItem(
+                              child:  Text(value),value: value);
+                        }).toList();
+                        },
+                      ),     
+        
         TextField( controller: numinput,
         keyboardType: TextInputType.number,
         
+        
             decoration: InputDecoration(
+              icon: Icon(Icons.contact_mail_sharp),
               border: OutlineInputBorder(),
               hintText: 'Enter the Contact No.',
             ),
-           ),
+           ),],),),
            SizedBox(height: 8.0,),
-           TextField(
+           Container(
+          margin: EdgeInsets.only(right: 15),
+           child:TextField(
           
               controller: dateInput,
               //editing controller of this TextField
@@ -88,18 +124,18 @@ class _HomeState extends State<Home> {
               readOnly: true,
               //set it true, so that user will not able to edit text
               onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
+                pickedDate = await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
-                    firstDate: DateTime(1950),
+                    firstDate: DateTime.now(),
                     //DateTime.now() - not to allow to choose before today.
                     lastDate: DateTime(2100));
- 
+                DateTime d = pickedDate! ;  
                 if (pickedDate != null) {
                   print(
                       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                   String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
+                      DateFormat('yyyy-MM-dd').format(d);
                   print(
                       formattedDate); //formatted date output using intl package =>  2021-03-16
                   setState(() {
@@ -108,15 +144,16 @@ class _HomeState extends State<Home> {
                   });
                 } else {}
               },
-            ),
+            ),),
           SizedBox(height: 8.0 ,),
-
-          TextField(controller: _controller,
+          Container(
+          margin: EdgeInsets.only(left: 40,right: 15),
+          child: TextField(controller: _controller,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Choose the Choice from Drop-Down List',
             ),
-            readOnly: true,),
+            readOnly: true,),),
                       
                       new PopupMenuButton<String>(
                         icon: const Icon(Icons.arrow_drop_down),
@@ -146,10 +183,7 @@ class _HomeState extends State<Home> {
                           return items.map<PopupMenuItem<String>>((String value) {
                             return new PopupMenuItem(
                               child:  Text(value),value: value);
-
-                              
-                          
-                          }).toList();
+                        }).toList();
                         },
                       ),
                       Container(
@@ -164,7 +198,11 @@ class _HomeState extends State<Home> {
 
                       ElevatedButton(onPressed: (){
                         // use calander api here
-                      
+                        apicall ap = new apicall();
+                        ap. api_call(pickedDate!);
+                        numinput.text ="";
+                        dateInput.text="";
+                        _controller.text="";
                       },
                     
                        child: Text(
@@ -178,4 +216,6 @@ class _HomeState extends State<Home> {
 
     
   }
+  
+  
 }
