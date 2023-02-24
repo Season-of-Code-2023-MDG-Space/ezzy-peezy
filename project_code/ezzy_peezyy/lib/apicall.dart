@@ -17,9 +17,9 @@ class apicall  {
   // ignore: prefer_typing_uninitialized_variables
   var _credentials;
   
-  Future apiCall(DateTime dt) async{
+  void apiCall(DateTime dt) {
     cred c =  cred();
-   
+    print("inside apiCall");
     if (Platform.isAndroid) {
       _credentials =  ClientId(
           c.ClientId_android,

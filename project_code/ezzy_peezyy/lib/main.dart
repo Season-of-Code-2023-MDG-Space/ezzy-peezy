@@ -39,6 +39,8 @@ class _HomeState extends State<Home> {
     super.initState();
 
   }
+  apicall ap =  apicall();
+                        
   // List<Contact>? contacts;
   // Future permis() async{
   //   var status = await Permission.contacts.status;
@@ -204,12 +206,12 @@ class _HomeState extends State<Home> {
 
                       ElevatedButton(onPressed: (){
                         // use calander api here
-                        apicall ap =  apicall();
+                        if(numinput.text != "" &&  dateInput.text!= "" &&_controller.text!= "") {
                         ap. apiCall(pickedDate!);
                         numinput.text ="";
                         dateInput.text="";
                         _controller.text="";
-                      },
+                      }},
                     
                        child: const Text(
                         'submit'
