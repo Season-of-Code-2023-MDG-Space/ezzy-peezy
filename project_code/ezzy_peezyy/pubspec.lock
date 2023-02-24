@@ -21,18 +21,18 @@ packages:
     dependency: "direct main"
     description:
       name: auth0_flutter
-      sha256: fa6f9ed5c8650611c033cf8e18f24f4a1d0617c54bf78bc2609f3f65e279f1dd
+      sha256: "2d29c95fd25164c9b9c88beefc19619b213e1c16e1ab067e926005d675cda344"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.1.0"
   auth0_flutter_platform_interface:
     dependency: transitive
     description:
       name: auth0_flutter_platform_interface
-      sha256: "91244dcf3ba5acfc1823b38e7f1ca4e459d35abdc7d9d9e19f1bccfc241ee41b"
+      sha256: fdd22d22e3f2c45a4db5579f65d358aaed3d4d51eb9994031a497af5dc5e4736
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.1.0"
   boolean_selector:
     dependency: transitive
     description:
