@@ -1,4 +1,3 @@
-
 import "package:googleapis_auth/auth_io.dart";
 import 'package:googleapis/calendar/v3.dart' hide Colors;
 import 'dart:io' show Platform ;
@@ -8,16 +7,14 @@ import 'package:http/http.dart' as http;
 import 'Credentials/cred.dart';
 import 'dart:developer';
 
-String respo="";
-
-class apicall  {
-
- 
+class wappCall{
   static const _scopes =  [CalendarApi.calendarScope];
-  // ignore: prefer_typing_uninitialized_variables
-  var _credentials;
   
-  Future apiCall(DateTime dt) async{
+  wappCall()
+  {
+    
+  // ignore: prefer_typing_uninitialized_variables
+  
     cred c =  cred();
    
     if (Platform.isAndroid) {
@@ -31,26 +28,9 @@ class apicall  {
     }
   
 
-  Event event = Event(); // Create object of event
-  
-  DateTime dtStart =  DateTime(dt.year,dt.month , dt.day , 0,0,0);
-  DateTime dtEnd =  DateTime(dt.year,dt.month , dt.day , 23,59,59);
-  
-  
-  
-  EventDateTime start =  EventDateTime(); //Setting start time
-      start.dateTime = dtStart;
-      start.timeZone = "GMT+05:00";
-      event.start = start;
-
-      
-      EventDateTime end =  EventDateTime(); //setting end time
-      end.timeZone = "GMT+05:00";
-      end.dateTime = dtEnd;
-      event.end = end;
-
-
-}
+  Event event = Event();
+  }
+var _credentials;
 insertEvent(event){
 try {
         clientViaUserConsent(_credentials, _scopes, prompt).then((AuthClient client){
@@ -76,5 +56,13 @@ try {
       await launchUrl(Uri.parse(url));
     } else {
       throw 'Could not launch $url';
-    }
-  }}
+    }}
+  
+  void wcall() async{
+
+
+  }
+
+
+
+}

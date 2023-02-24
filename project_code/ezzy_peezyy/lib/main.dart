@@ -22,42 +22,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  TextEditingController _controller = new TextEditingController();
+  TextEditingController _controller = TextEditingController();
   var items = ['Birthday', 'Anniversary', 'Congratulations','Custom Message <3'];
  
   TextEditingController dateInput = TextEditingController();
   TextEditingController msgInput = TextEditingController();
-  TextEditingController numinput = TextEditingController();
+  TextEditingController numinput  = TextEditingController();
   List<Widget> textViewL = [];
 
-  DateTime dt = new DateTime(DateTime.now().year);
+  DateTime dt =  DateTime(DateTime.now().year);
 
+  @override
   void initState(){
     dateInput.text = "";
-    permis();
+    // permis();
     super.initState();
 
   }
-  List<Contact>? contacts;
-  Future permis() async{
-    var status = await Permission.contacts.status;
+  // List<Contact>? contacts;
+  // Future permis() async{
+  //   var status = await Permission.contacts.status;
 
-    if(status.isDenied || status.isRestricted){
-      if (await Permission.speech.isPermanentlyDenied) { openAppSettings();}
-    }
-    else{ contacts = await ContactsService.getContacts(withThumbnails: false);
-    print(contacts);}
-  }
+  //   if(status.isDenied || status.isRestricted){
+  //     if (await Permission.speech.isPermanentlyDenied) { openAppSettings();}
+  //   }
+  //   else{ contacts = await ContactsService.getContacts(withThumbnails: false);
+  //   print(contacts);}
+  // }
   
   Widget _textView(){
     return(
       Container(
         
-      margin: EdgeInsets.only(left: 80,right: 80),
+      margin: const EdgeInsets.only(left: 80,right: 80),
       
           child: TextField(
               controller: msgInput,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Type Custom Message',
                 fillColor: Color.fromARGB(255, 226, 179, 37),
@@ -72,7 +73,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
         appBar: AppBar(
-          title: Text('EEZY-PEEZY'),
+          title: const Text('EEZY-PEEZY'),
           centerTitle: true,
           backgroundColor: Colors.red[800],
         ),
@@ -82,41 +83,44 @@ class _HomeState extends State<Home> {
         body: Column(
 
           children:<Widget> [
-            SizedBox(height: 20.0,),
-            Container(  margin: EdgeInsets.only(right: 15),
-          child: Row(
-            children: <Widget>[
-            new PopupMenuButton<String>(
-                        icon: const Icon(Icons.contact_mail_sharp), // TO DO
-                        onSelected: (String value) {
-                              numinput.text = value;
-                        },
-                        itemBuilder: (BuildContext context) {
-                          return items.map<PopupMenuItem<String>>((String value) {
-                            return new PopupMenuItem(
-                              child:  Text(value),value: value);
-                        }).toList();
-                        },
-                      ),     
+            const SizedBox(height: 20.0,),
+            Container(  
+              margin: const EdgeInsets.only(right: 15),
+          
+            
+            // new PopupMenuButton<String>(
+            //             icon: const Icon(Icons.contact_mail_sharp), // TO DO
+            //             onSelected: (String value) {
+            //                   numinput.text = value;
+            //             },
+            //             itemBuilder: (BuildContext context) {
+               
+            //               return items.map<PopupMenuItem<String>>((String value) {
+            //                 return new PopupMenuItem(
+            //                   child:  Text(value),value: value);
+            //             }).toList();
+            //             },
+            //           ),     
         
-        TextField( controller: numinput,
-        keyboardType: TextInputType.number,
+            child: TextField( controller: numinput,
+            keyboardType: TextInputType.number,
         
         
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               icon: Icon(Icons.contact_mail_sharp),
               border: OutlineInputBorder(),
               hintText: 'Enter the Contact No.',
             ),
-           ),],),),
-           SizedBox(height: 8.0,),
+           ),
+           ),
+           const SizedBox(height: 8.0,),
            Container(
-          margin: EdgeInsets.only(right: 15),
+          margin: const EdgeInsets.only(right: 15),
            child:TextField(
           
               controller: dateInput,
               //editing controller of this TextField
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   icon: Icon(Icons.calendar_today), //icon of text field
                   border: OutlineInputBorder(),
                   labelText: "Enter Date" //label text of field
@@ -145,17 +149,18 @@ class _HomeState extends State<Home> {
                 } else {}
               },
             ),),
-          SizedBox(height: 8.0 ,),
+          const SizedBox(height: 8.0 ,),
+
           Container(
-          margin: EdgeInsets.only(left: 40,right: 15),
+          margin: const EdgeInsets.only(left: 40,right: 15),
           child: TextField(controller: _controller,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Choose the Choice from Drop-Down List',
             ),
             readOnly: true,),),
                       
-                      new PopupMenuButton<String>(
+                      PopupMenuButton<String>(
                         icon: const Icon(Icons.arrow_drop_down),
                         onSelected: (String value) {
                         print("$value");
@@ -181,8 +186,9 @@ class _HomeState extends State<Home> {
                         },
                         itemBuilder: (BuildContext context) {
                           return items.map<PopupMenuItem<String>>((String value) {
-                            return new PopupMenuItem(
-                              child:  Text(value),value: value);
+                            return  PopupMenuItem(
+                              value: value,
+                              child:  Text(value));
                         }).toList();
                         },
                       ),
@@ -198,14 +204,14 @@ class _HomeState extends State<Home> {
 
                       ElevatedButton(onPressed: (){
                         // use calander api here
-                        apicall ap = new apicall();
-                        ap. api_call(pickedDate!);
+                        apicall ap =  apicall();
+                        ap. apiCall(pickedDate!);
                         numinput.text ="";
                         dateInput.text="";
                         _controller.text="";
                       },
                     
-                       child: Text(
+                       child: const Text(
                         'submit'
                        ))
 
