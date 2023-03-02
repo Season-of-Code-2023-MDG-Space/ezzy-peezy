@@ -1,7 +1,9 @@
 
+import 'package:ezzy_peezy/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'apicall.dart';
+import "package:googleapis_auth/auth_io.dart";
 
 void main() {
   runApp(MaterialApp(
@@ -24,15 +26,26 @@ class _HomeState extends State<Home> {
   TextEditingController msgInput = TextEditingController();
   TextEditingController numinput  = TextEditingController();
   List<Widget> textViewL = [];
-
+  String send="";
+  String textHint="";
   DateTime dt =  DateTime(DateTime.now().year);
+  google_sign_in g = google_sign_in();
+  AuthClient? a;
+
+void callGoogleLogin() async{
+    if(a == null){
+      print("Inside login page.");
+    a = await(g.login()); 
+  }}
+
 
   @override
-  void initState(){
+  void initState() {
     dateInput.text = "";
     // permis();
+    callGoogleLogin();
+     print("before Screen");
     super.initState();
-
   }
   apicall ap =  apicall();
                         
@@ -55,12 +68,15 @@ class _HomeState extends State<Home> {
       
           child: TextField(
               controller: msgInput,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Type Custom Message',
+              
+              decoration: InputDecoration(
+          hintText: textHint,
+          border: OutlineInputBorder(),
+        
+                
                 fillColor: Color.fromARGB(255, 226, 179, 37),
-              ),
-            ),
+              
+            ),),
 )
 );}
   DateTime? pickedDate;
@@ -68,6 +84,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: Colors.grey[300],
         appBar: AppBar(
           title: const Text('EEZY-PEEZY'),
@@ -99,7 +116,8 @@ class _HomeState extends State<Home> {
             //             },
             //           ),     
         
-            child: TextField( controller: numinput,
+            child: TextField( 
+              controller: numinput,
             keyboardType: TextInputType.number,
         
         
@@ -111,7 +129,9 @@ class _HomeState extends State<Home> {
            ),
            ),
            const SizedBox(height: 8.0,),
+           
            Container(
+            
           margin: const EdgeInsets.only(right: 15),
            child:TextField(
           
@@ -162,23 +182,58 @@ class _HomeState extends State<Home> {
                         onSelected: (String value) {
                         print("$value");
                           if(value == 'Birthday')
-                          {
+                          {   
+                              setState(() {
+                                
+                             if(textViewL.length >=1){
+                              textViewL.clear();   }
+                            textHint = "Name of reciever"; 
+                            
+                            textViewL.add(_textView()); 
+                            
+                                         
+                          });
                               // call Birthday fn
+                              send ="Happy Birthday ";
                               
                           }
                           else if(value =='Anniversary') 
                           {
                             // call Aniver fn
+                             setState(() {if(textViewL.length >=1){
+                              textViewL.clear();   }
+                            textHint = "Name of reciever"; 
+                            textViewL.add(_textView()); 
+                            
+                                      
+                          });
+                              // call Birthday fn
+                              send ="Happy Anniversary ";
+                             
                           }
                           else if(value =='Congratulations') 
                           {
                             // call Congratulations fn
+                             setState(() {
+                           if(textViewL.length ==1){
+                              textViewL.clear();   }
+                            textHint = "Name of reciever"; 
+                            
+                            textViewL.add(_textView()); 
+                            });
+                              // call Birthday fn
+                              send ="Congratulations ";
+                             
                           }
                           else if(value =='Custom Message <3') 
                           {
                           setState(() {
-                            textViewL.add(_textView());               
-                          });}
+                           if(textViewL.length ==1){
+                              textViewL.clear();  } 
+                             textHint ="Type Your Custom Message";              
+                            
+                            textViewL.add(_textView()); 
+                            });}
                           _controller.text = value;
                         },
                         itemBuilder: (BuildContext context) {
@@ -189,8 +244,11 @@ class _HomeState extends State<Home> {
                         }).toList();
                         },
                       ),
+                      
                       Container(
                         height: 80.0,
+                        
+                        
                        child: ListView.builder
                        (
                         itemCount: textViewL.length,
@@ -201,11 +259,17 @@ class _HomeState extends State<Home> {
 
                       ElevatedButton(onPressed: (){
                         // use calander api here
-                        if(numinput.text != "" &&  dateInput.text!= "" &&_controller.text!= "") {
-                        ap. apiCall(pickedDate!);
+                        if(numinput.text != "" &&  dateInput.text!= "" &&_controller.text!= "" && (numinput.text).length ==10) {
+                       send = send + msgInput.text;
+                       AuthClient clientt = a!;
+                       send = "Number = "+(numinput.text)+" : Message = "+send;
+                        ap. apiCall(pickedDate!,clientt , send);
                         numinput.text ="";
                         dateInput.text="";
                         _controller.text="";
+                        msgInput.text ="";
+                        
+
                       }},
                     
                        child: const Text(

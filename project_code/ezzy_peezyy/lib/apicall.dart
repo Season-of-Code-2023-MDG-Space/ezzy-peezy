@@ -1,40 +1,33 @@
 
-import "package:googleapis_auth/auth_io.dart";
 import 'package:googleapis/calendar/v3.dart' hide Colors;
+import 'package:googleapis_auth/auth_io.dart';
 import 'dart:developer';
 import 'dart:io' show Platform;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'Credentials/cred.dart';
+import 'main.dart';
 
 
 String respo="";
 
 class apicall  {
 
- final GoogleSignIn _googleSignIn = GoogleSignIn(
-     scopes: <String>[
-       CalendarApi.calendarEventsScope
-    ],
-    // clientId: ClientId_android
-);
 
   static const _scopes =  [CalendarApi.calendarScope];
   // ignore: prefer_typing_uninitialized_variables
   var _credentials;
   
-  void apiCall(DateTime dt) async {
-    cred c =  cred();
-    print("inside apiCall");
-    if (Platform.isAndroid) {
-      _credentials =  ClientId(
-          c.ClientId_android,
-          "");
-    } else if (Platform.isIOS) {
-      _credentials =  ClientId(
-          c.ClientId_ios,
-          "");
-    }
+   void apiCall(DateTime dt , AuthClient clientt , String send) async {
+  //   cred c =  cred();
+  //   print("inside apiCall");
+  //   if (Platform.isAndroid) {
+  //     _credentials =  ClientId(
+  //         c.ClientId_android,
+  //         "");
+  //   } else if (Platform.isIOS) {
+  //     _credentials =  ClientId(
+  //         c.ClientId_ios,
+  //         "");
+  //   }
   
 
   Event event = Event(); // Create object of event
@@ -54,11 +47,11 @@ class apicall  {
       end.timeZone = "GMT+05:00";
       end.dateTime = dtEnd;
       event.end = end;
-       await login();
-      final AuthClient? client = await _googleSignIn.authenticatedClient();
+      
+      event.summary ="Event By Ezzy-Peezyy";
+      event.description = send;
 
-      {AuthClient clientt = client! ;
-          insertEvent(event , clientt);}
+        insertEvent(event , clientt);
 
 }
 insertEvent(event ,client) async{
@@ -69,7 +62,7 @@ try {
         String calendarId = "primary";
         calendar.events.insert(event,calendarId).then((value) {
         
-          if (value.status == "confirmed") {print ("pp");
+          if (value.status == "confirmed") {//print ("pp");
             log('Event added in google calendar');
           } else {
             log("Unable to add event in google calendar");
@@ -83,10 +76,4 @@ try {
 
 
   
-  Future<void> login() async {
-    //print("heh");
-    //  await _googleSignIn.disconnect();
-    await _googleSignIn.signIn();
-      
-  }
   }
