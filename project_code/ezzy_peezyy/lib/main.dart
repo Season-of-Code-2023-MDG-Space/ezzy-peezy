@@ -1,17 +1,50 @@
 
+// ignore_for_file: avoid_print
+import 'dart:io';
+import 'package:workmanager/workmanager.dart';
 import 'package:ezzy_peezy/google_sign_in.dart';
+import 'package:ezzy_peezy/timer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'apicall.dart';
 import "package:googleapis_auth/auth_io.dart";
-
+import 'readCalendar.dart';
+import 'timer.dart';
 void main() {
   runApp(MaterialApp(
     home : Home()
   ));
 }
 
+readCalendar rc = readCalendar();
+  int n=0;
+
+late AuthClient c;
+
+
+  @pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      
+      case "call_whatsapp":
+        print("Reading Evdtn from calendar");
+        rc.readEvents(c);
+        break;
+      default:
+      print("NOthing to Dooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      break;  
+     
+    }
+return Future.value(true);
+});
+}
+
+
 class Home extends StatefulWidget {
+  const Home({super.key});
+
  
 
   @override
@@ -19,7 +52,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   var items = ['Birthday', 'Anniversary', 'Congratulations','Custom Message <3'];
  
   TextEditingController dateInput = TextEditingController();
@@ -31,23 +64,55 @@ class _HomeState extends State<Home> {
   DateTime dt =  DateTime(DateTime.now().year);
   google_sign_in g = google_sign_in();
   AuthClient? a;
-
-void callGoogleLogin() async{
-    if(a == null){
-      print("Inside login page.");
-    a = await(g.login()); 
-  }}
-
+  
 
   @override
   void initState() {
     dateInput.text = "";
+    
     // permis();
     callGoogleLogin();
+    
      print("before Screen");
     super.initState();
   }
   apicall ap =  apicall();
+
+
+
+
+void check(AuthClient cc)
+{ 
+  c=cc;  
+   Workmanager().initialize(
+                      callbackDispatcher,
+                      isInDebugMode: true,
+                    );
+    if(n!=0){   }             
+
+   if(Platform.isAndroid)
+   {
+    Workmanager().registerPeriodicTask(
+                              "simplePeriodicTask",
+                              "call_whatsapp",
+                              //initialDelay: Duration(seconds: 10),
+                              frequency: Duration(minutes: 15),
+                            );
+   }
+  else
+  {
+  }}
+
+
+void callGoogleLogin() async{
+    if(a == null){
+      print("Inside login page.");
+    a = await(g.login());
+    //rc.readEvents(a!); 
+    check(a!);
+
+  }}
+
                         
   // List<Contact>? contacts;
   // Future permis() async{
@@ -71,10 +136,10 @@ void callGoogleLogin() async{
               
               decoration: InputDecoration(
           hintText: textHint,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         
                 
-                fillColor: Color.fromARGB(255, 226, 179, 37),
+                fillColor: const Color.fromARGB(255, 226, 179, 37),
               
             ),),
 )
@@ -180,12 +245,12 @@ void callGoogleLogin() async{
                       PopupMenuButton<String>(
                         icon: const Icon(Icons.arrow_drop_down),
                         onSelected: (String value) {
-                        print("$value");
+                        print(value);
                           if(value == 'Birthday')
                           {   
                               setState(() {
                                 
-                             if(textViewL.length >=1){
+                             if(textViewL.isNotEmpty){
                               textViewL.clear();   }
                             textHint = "Name of reciever"; 
                             
@@ -200,7 +265,7 @@ void callGoogleLogin() async{
                           else if(value =='Anniversary') 
                           {
                             // call Aniver fn
-                             setState(() {if(textViewL.length >=1){
+                             setState(() {if(textViewL.isNotEmpty){
                               textViewL.clear();   }
                             textHint = "Name of reciever"; 
                             textViewL.add(_textView()); 
@@ -262,7 +327,7 @@ void callGoogleLogin() async{
                         if(numinput.text != "" &&  dateInput.text!= "" &&_controller.text!= "" && (numinput.text).length ==10) {
                        send = send + msgInput.text;
                        AuthClient clientt = a!;
-                       send = "Number = "+(numinput.text)+" : Message = "+send;
+                       send = "Number = ${numinput.text} : Message = $send";
                         ap. apiCall(pickedDate!,clientt , send);
                         numinput.text ="";
                         dateInput.text="";
@@ -271,7 +336,7 @@ void callGoogleLogin() async{
                         
 
                       }},
-                    
+                      
                        child: const Text(
                         'submit'
                        ))
