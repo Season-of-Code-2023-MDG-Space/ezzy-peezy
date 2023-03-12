@@ -3,13 +3,23 @@ import 'package:googleapis/cloudsearch/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'dart:developer';
 import 'wappCall.dart';
+import 'main.dart';
+
 
 class readCalendar
 {
   wappcall wc = wappcall();
-  void readEvents(AuthClient client) async
-  {     DateTime startTime = DateTime.now();  
+   late AuthClient client ;
 
+  String getData(AuthClient cc ){ 
+    client =cc; 
+    print("just got data");
+    return "dsf";  }
+
+  void readEvents() async
+  {     DateTime startTime = DateTime.now();  
+  print("Entered in REad Events");
+  if(client == null){print("nalla client");}
   DateTime endTime = DateTime.now().add(Duration(days: 2));
         var calendar = CalendarApi(client);
         String calendarId = "primary";
@@ -19,6 +29,7 @@ class readCalendar
           timeMax: endTime,
           timeMin: startTime,
         ).then((Events events) {
+          print("going correct till now");
           if(events != null){
         (events).items?.forEach((Event event) {
           print(event.summary);
@@ -27,5 +38,6 @@ class readCalendar
           }
           );}
         });
+
 }
 }

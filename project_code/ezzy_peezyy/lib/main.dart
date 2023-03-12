@@ -20,7 +20,7 @@ readCalendar rc = readCalendar();
   int n=0;
 
 late AuthClient c;
-
+  AuthClient? a;
 
   @pragma(
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
@@ -30,12 +30,15 @@ void callbackDispatcher() {
       
       case "call_whatsapp":
         print("Reading Evdtn from calendar");
-        rc.readEvents(c);
+        rc.readEvents();
+        print("checked");
         break;
       default:
       print("NOthing to Dooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
       break;  
      
+      
+
     }
 return Future.value(true);
 });
@@ -63,7 +66,7 @@ class _HomeState extends State<Home> {
   String textHint="";
   DateTime dt =  DateTime(DateTime.now().year);
   google_sign_in g = google_sign_in();
-  AuthClient? a;
+
   
 
   @override
@@ -95,7 +98,7 @@ void check(AuthClient cc)
     Workmanager().registerPeriodicTask(
                               "simplePeriodicTask",
                               "call_whatsapp",
-                              //initialDelay: Duration(seconds: 10),
+                              initialDelay: Duration(seconds: 10),
                               frequency: Duration(minutes: 15),
                             );
    }
@@ -108,10 +111,14 @@ void callGoogleLogin() async{
     if(a == null){
       print("Inside login page.");
     a = await(g.login());
-    //rc.readEvents(a!); 
+    
+    String s = await (rc.getData(a!));
+    //rc.readEvents(); 
     check(a!);
 
-  }}
+  }
+  
+  }
 
                         
   // List<Contact>? contacts;
