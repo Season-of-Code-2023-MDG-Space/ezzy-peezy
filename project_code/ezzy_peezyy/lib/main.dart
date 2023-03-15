@@ -9,10 +9,15 @@ import 'package:intl/intl.dart';
 import 'apicall.dart';
 import "package:googleapis_auth/auth_io.dart";
 import 'readCalendar.dart';
-import 'timer.dart';
+import 'notificsation_reader.dart';
+import 'notif_perm.dart';
 void main() {
   runApp(MaterialApp(
-    home : Home()
+      initialRoute: '/notif',
+    routes: {
+     '/notif' :(context) => notif_perm(),
+      '/home': (context) => Home(),
+    }
   ));
 }
 
@@ -77,6 +82,7 @@ class _HomeState extends State<Home> {
     callGoogleLogin();
     
      print("before Screen");
+     nr.initPlatformState();
     super.initState();
   }
   apicall ap =  apicall();
@@ -91,32 +97,50 @@ void check(AuthClient cc)
                       callbackDispatcher,
                       isInDebugMode: true,
                     );
-    if(n!=0){   }             
+    // if(n==0)
+    {               
 
    if(Platform.isAndroid)
    {
+    print("Calling the fn");
     Workmanager().registerPeriodicTask(
                               "simplePeriodicTask",
                               "call_whatsapp",
-                              initialDelay: Duration(seconds: 10),
-                              frequency: Duration(minutes: 15),
+                              // inputData: <String, dynamic>{'client' :c},
+                              // initialDelay: Duration(seconds: 10),
+                              frequency: const Duration(minutes: 15),
                             );
-   }
-  else
-  {
-  }}
+   }}
+  // else if(n==0)
+  // {
+
+  //   DateTime dt = DateTime.now();
+  //   DateTime dt2 = DateTime(dt.year , dt.month , dt.day , 23 , 59 , 00);
+  //   n++;
+
+  //  Workmanager().registerPeriodicTask(
+  //                             "simplePeriodicTask",
+  //                             "call_whatsapp",
+  //                             //initialDelay: Duration(seconds: 10),
+  //                             frequency: Duration(
+  //                             minutes: dt2.minute - dt.minute,
+  //                             hours: dt2.hour - dt.hour,
+  //                             ),
+  //                           );
+  // }
+
+  }
 
 
 void callGoogleLogin() async{
     if(a == null){
       print("Inside login page.");
     a = await(g.login());
-    
+    }
     String s = await (rc.getData(a!));
-    //rc.readEvents(); 
+    // rc.readEvents(a!); 
     check(a!);
 
-  }
   
   }
 

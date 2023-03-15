@@ -9,10 +9,10 @@ import 'main.dart';
 class readCalendar
 {
   wappcall wc = wappcall();
-   late AuthClient client ;
+   AuthClient? client ;
 
   String getData(AuthClient cc ){ 
-    client =cc; 
+    client = cc; 
     print("just got data");
     return "dsf";  }
 
@@ -20,8 +20,9 @@ class readCalendar
   {     DateTime startTime = DateTime.now();  
   print("Entered in REad Events");
   if(client == null){print("nalla client");}
+  
   DateTime endTime = DateTime.now().add(Duration(days: 2));
-        var calendar = CalendarApi(client);
+        var calendar = CalendarApi(client!);
         String calendarId = "primary";
         calendar.events.list(
           calendarId,
