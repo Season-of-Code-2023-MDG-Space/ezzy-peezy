@@ -1,9 +1,15 @@
 
 // ignore_for_file: avoid_print
 import 'dart:io';
+import 'package:googleapis/calendar/v3.dart' hide Colors;
+import 'package:googleapis/cloudsearch/v1.dart';
+import 'dart:developer';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
+
+import 'package:permission_handler/permission_handler.dart' as p;
 import 'package:workmanager/workmanager.dart';
 import 'package:ezzy_peezy/google_sign_in.dart';
-import 'package:ezzy_peezy/timer.dart';
+import 'wappCall.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'apicall.dart';
@@ -13,7 +19,7 @@ import 'notificsation_reader.dart';
 import 'notif_perm.dart';
 void main() {
   runApp(MaterialApp(
-      initialRoute: '/notif',
+      initialRoute: '/home',
     routes: {
      '/notif' :(context) => notif_perm(),
       '/home': (context) => Home(),
@@ -21,9 +27,10 @@ void main() {
   ));
 }
 
-readCalendar rc = readCalendar();
+// readCalendar rc = readCalendar();
   int n=0;
-
+  google_sign_in g = google_sign_in();
+notif_reader nr = notif_reader();       
 late AuthClient c;
   AuthClient? a;
 
@@ -34,19 +41,72 @@ void callbackDispatcher() {
     switch (task) {
       
       case "call_whatsapp":
-        print("Reading Evdtn from calendar");
-        rc.readEvents();
-        print("checked");
+        print("Reading Evdtn from calendar");  
+        // read();
+        readEvents();
+        print("hellooo");
+        // print("$e \n");
+        // print("error here");
+      
+      //else{print("c is not null");}
         break;
+      case 'call_notif':
+      nr.initPlatformState();     
+
+      break;  
       default:
       print("NOthing to Dooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
       break;  
      
-      
-
     }
 return Future.value(true);
 });
+}
+
+ AuthClient? client;
+ wappcall wc = wappcall();
+  //  AuthClient? client ;
+
+  // String getData(AuthClient cc ){ 
+  //   client = cc; 
+  //   print("just got data");
+  //   return "dsf";  }
+
+  void readEvents() async
+    
+  {  
+       
+     DateTime startTime = DateTime.now();  
+        print("Entered in REad Events");
+        
+          // client = await(g.login());
+        if(client == null)
+        {
+          print("nalla client");
+        }
+        
+        DateTime endTime = DateTime.now().add(const Duration(days: 2));
+        try{
+        var calendar = CalendarApi(client!);
+        String calendarId = "primary";
+        calendar.events.list(
+          calendarId,
+          q: "Event By Ezzy-Peezyy",
+          timeMax: endTime,
+          timeMin: startTime,
+        ).then((Events events) {
+          print("going correct till now");
+          if(events != null){
+        (events).items?.forEach((Event event) {
+          print(event.summary);
+          String des = event.description! ;
+          wc.launchWhatsAppUri(des);
+          }
+          );}
+        });
+
+}
+catch(e){print("error is $e");}
 }
 
 
@@ -61,7 +121,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
-  var items = ['Birthday', 'Anniversary', 'Congratulations','Custom Message <3'];
+  var items = ['Occasions','Birthday', 'Anniversary', 'Congratulations','Custom Message <3 ' ];
  
   TextEditingController dateInput = TextEditingController();
   TextEditingController msgInput = TextEditingController();
@@ -70,66 +130,81 @@ class _HomeState extends State<Home> {
   String send="";
   String textHint="";
   DateTime dt =  DateTime(DateTime.now().year);
-  google_sign_in g = google_sign_in();
 
   
-
+  void notifPermCheck()async{
+    if (await  p.Permission.notification.request().isDenied) {
+                    // nr.initPlatformState();
+                    Navigator.pushNamed(context , '/notif');
+                  }
+  }
+String val = 'Occasions';       
+             
   @override
   void initState() {
     dateInput.text = "";
-    
+    notifStart();
     // permis();
     callGoogleLogin();
-    
-     print("before Screen");
-     nr.initPlatformState();
+    notifPermCheck();
+    print("before Screen");
+    nr.initPlatformState();
     super.initState();
   }
   apicall ap =  apicall();
 
-
-
-
-void check(AuthClient cc)
-{ 
-  c=cc;  
+void notifStart(){
    Workmanager().initialize(
                       callbackDispatcher,
                       isInDebugMode: true,
                     );
-    // if(n==0)
-    {               
+   
+   if(Platform.isAndroid)
+   {
+    Workmanager().registerPeriodicTask(
+                              "calling notif reload",
+                              "call_notif",
+                               initialDelay: const Duration(seconds: 10),
+                              frequency: const Duration(minutes: 15),
+                            );
+   }
+}
+
+void check()
+{ 
+  // c=cc;  
+   Workmanager().initialize(
+                      callbackDispatcher,
+                      isInDebugMode: true,
+                    );
+    if(n!=0){   }             
 
    if(Platform.isAndroid)
    {
-    print("Calling the fn");
     Workmanager().registerPeriodicTask(
                               "simplePeriodicTask",
                               "call_whatsapp",
-                              // inputData: <String, dynamic>{'client' :c},
-                              // initialDelay: Duration(seconds: 10),
+                              initialDelay: const Duration(seconds: 15),
                               frequency: const Duration(minutes: 15),
                             );
-   }}
-  // else if(n==0)
-  // {
+   }
+  else
+  {
+    DateTime dt = DateTime.now();
+    DateTime dt2 = DateTime(dt.year , dt.month , dt.day , 23 , 59 , 00);
 
-  //   DateTime dt = DateTime.now();
-  //   DateTime dt2 = DateTime(dt.year , dt.month , dt.day , 23 , 59 , 00);
-  //   n++;
 
-  //  Workmanager().registerPeriodicTask(
-  //                             "simplePeriodicTask",
-  //                             "call_whatsapp",
-  //                             //initialDelay: Duration(seconds: 10),
-  //                             frequency: Duration(
-  //                             minutes: dt2.minute - dt.minute,
-  //                             hours: dt2.hour - dt.hour,
-  //                             ),
-  //                           );
-  // }
-
-  }
+   Workmanager().registerPeriodicTask(
+                              "simplePeriodicTask",
+                              "call_whatsapp",
+                              //initialDelay: Duration(seconds: 10),
+                              frequency: Duration(
+                              minutes: dt2.minute - dt.minute,
+                              hours: dt2.hour - dt.hour,
+                              ),
+                            );
+    
+  }}
 
 
 void callGoogleLogin() async{
@@ -137,11 +212,10 @@ void callGoogleLogin() async{
       print("Inside login page.");
     a = await(g.login());
     }
-    String s = await (rc.getData(a!));
+    // String s = await (rc.getData(a!));
     // rc.readEvents(a!); 
-    check(a!);
-
-  
+    client = a;
+    check();
   }
 
                         
@@ -167,7 +241,11 @@ void callGoogleLogin() async{
               
               decoration: InputDecoration(
           hintText: textHint,
-          border: const OutlineInputBorder(),
+           border: OutlineInputBorder(
+                borderSide: BorderSide(width: 3, color: Color.fromARGB(255, 136, 255, 0)),
+                // borderRadius: BorderRadius.(Radius.circular(10.0)),
+                 borderRadius: BorderRadius.circular(26.0),
+                ),
         
                 
                 fillColor: const Color.fromARGB(255, 226, 179, 37),
@@ -181,11 +259,11 @@ void callGoogleLogin() async{
   Widget build(BuildContext context) {
     return Scaffold(
       
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
           title: const Text('EEZY-PEEZY'),
           centerTitle: true,
-          backgroundColor: Colors.red[800],
+          backgroundColor:Colors.green[900],
         ),
     // const Padding(
     //       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -214,14 +292,24 @@ void callGoogleLogin() async{
         
             child: TextField( 
               controller: numinput,
+               textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+          
         
-        
-            decoration: const InputDecoration(
+            decoration:  InputDecoration(
+              hintText: 'Contact No.',
               icon: Icon(Icons.contact_mail_sharp),
-              border: OutlineInputBorder(),
-              hintText: 'Enter the Contact No.',
+              border: OutlineInputBorder(
+                borderSide: BorderSide(width: 3, color: Color.fromARGB(255, 136, 255, 0)),
+                // borderRadius: BorderRadius.(Radius.circular(10.0)),
+                 borderRadius: BorderRadius.circular(26.0),
+                ),
+                 
+              
+              
+              
             ),
+             
            ),
            ),
            const SizedBox(height: 8.0,),
@@ -230,13 +318,17 @@ void callGoogleLogin() async{
             
           margin: const EdgeInsets.only(right: 15),
            child:TextField(
-          
+            textAlign: TextAlign.center,
               controller: dateInput,
               //editing controller of this TextField
-              decoration: const InputDecoration(
+              decoration:  InputDecoration(
                   icon: Icon(Icons.calendar_today), //icon of text field
-                  border: OutlineInputBorder(),
-                  labelText: "Enter Date" //label text of field
+                  border: OutlineInputBorder(
+                borderSide: BorderSide(width: 3, color: Color.fromARGB(255, 136, 255, 0)),
+                // borderRadius: BorderRadius.(Radius.circular(10.0)),
+                 borderRadius: BorderRadius.circular(26.0),
+                ),
+                  hintText: "Date" //label text of field
                   ),
               readOnly: true,
               //set it true, so that user will not able to edit text
@@ -264,22 +356,110 @@ void callGoogleLogin() async{
             ),),
           const SizedBox(height: 8.0 ,),
 
-          Container(
-          margin: const EdgeInsets.only(left: 40,right: 15),
-          child: TextField(controller: _controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Choose the Choice from Drop-Down List',
-            ),
-            readOnly: true,),),
+          // Container(
+          // margin: const EdgeInsets.only(left: 40,right: 15),
+          // child: TextField(controller: _controller,
+          //   decoration:  InputDecoration(
+          //     border: OutlineInputBorder(
+          //       borderSide: const BorderSide(width: 3, color: Color.fromARGB(255, 136, 255, 0)),
+          //       // borderRadius: BorderRadius.(Radius.circular(10.0)),
+          //        borderRadius: BorderRadius.circular(26.0),
+          //       ),
+          //     hintText: 'Choose the Choice from Drop-Down List',
+          //   ),
+          //   readOnly: true,),
+          // ),
                       
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.arrow_drop_down),
-                        onSelected: (String value) {
-                        print(value);
+                      // PopupMenuButton<String>(
+                      //   icon: const Icon(Icons.arrow_drop_down),
+                      //   onSelected: (String value) {
+                      //   print(value);
+                      //     if(value == 'Birthday')
+                      //     {   
+                      //         setState(() {
+                                
+                      //        if(textViewL.isNotEmpty){
+                      //         textViewL.clear();   }
+                      //       textHint = "Name of reciever"; 
+                            
+                      //       textViewL.add(_textView()); 
+                            
+                                         
+                      //     });
+                      //         // call Birthday fn
+                      //         send ="Happy Birthday ";
+                              
+                      //     }
+                      //     else if(value =='Anniversary') 
+                      //     {
+                      //       // call Aniver fn
+                      //        setState(() {if(textViewL.isNotEmpty){
+                      //         textViewL.clear();   }
+                      //       textHint = "Name of reciever"; 
+                      //       textViewL.add(_textView()); 
+                            
+                                      
+                      //     });
+                      //         // call Birthday fn
+                      //         send ="Happy Anniversary ";
+                             
+                      //     }
+                      //     else if(value =='Congratulations') 
+                      //     {
+                      //       // call Congratulations fn
+                      //        setState(() {
+                      //      if(textViewL.length ==1){
+                      //         textViewL.clear();   }
+                      //       textHint = "Name of reciever"; 
+                            
+                      //       textViewL.add(_textView()); 
+                      //       });
+                      //         // call Birthday fn
+                      //         send ="Congratulations ";
+                             
+                      //     }
+                      //     else if(value =='Custom Message <3') 
+                      //     {
+                      //     setState(() {
+                      //      if(textViewL.length ==1){
+                      //         textViewL.clear();  } 
+                      //        textHint ="Type Your Custom Message";              
+                            
+                      //       textViewL.add(_textView()); 
+                      //       });}
+                      //     _controller.text = value;
+                      //   },
+                      //   itemBuilder: (BuildContext context) {
+                      //     return items.map<PopupMenuItem<String>>((String value) {
+                      //       return  PopupMenuItem(
+                      //         value: value,
+                      //         child:  Text(value));
+                      //   }).toList();
+                      //   },
+                      // ),
+                DropdownButton(
+                
+              // Initial Value
+              value: val,
+                
+              // Down Arrow Icon
+              icon: const Icon(Icons.keyboard_arrow_down),    
+                
+              // Array list of items
+              items: items.map((String items) {
+                return DropdownMenuItem(
+                  value: items,
+                  child: Text(items),
+                );
+              }).toList(),
+              // After selecting the desired option,it will
+              // change button value to selected value
+              onChanged: (String? value) 
+                {
+                   print(value);
                           if(value == 'Birthday')
-                          {   
-                              setState(() {
+                          {   setState(() {
+                              val= 'Birthday';
                                 
                              if(textViewL.isNotEmpty){
                               textViewL.clear();   }
@@ -297,6 +477,8 @@ void callGoogleLogin() async{
                           {
                             // call Aniver fn
                              setState(() {if(textViewL.isNotEmpty){
+                            val='Anniversary';
+                            
                               textViewL.clear();   }
                             textHint = "Name of reciever"; 
                             textViewL.add(_textView()); 
@@ -308,9 +490,11 @@ void callGoogleLogin() async{
                              
                           }
                           else if(value =='Congratulations') 
-                          {
+                          {        val= 'Congratulations';
                             // call Congratulations fn
                              setState(() {
+                              val= 'Congratulations';
+                           
                            if(textViewL.length ==1){
                               textViewL.clear();   }
                             textHint = "Name of reciever"; 
@@ -322,25 +506,27 @@ void callGoogleLogin() async{
                              
                           }
                           else if(value =='Custom Message <3') 
-                          {
+                          {val= 'Custom Message <3';
                           setState(() {
+                         val= 'Custom Message <3';
+                         
                            if(textViewL.length ==1){
                               textViewL.clear();  } 
                              textHint ="Type Your Custom Message";              
                             
                             textViewL.add(_textView()); 
                             });}
-                          _controller.text = value;
-                        },
+                          _controller.text = value!;
+                    
                         itemBuilder: (BuildContext context) {
                           return items.map<PopupMenuItem<String>>((String value) {
                             return  PopupMenuItem(
                               value: value,
                               child:  Text(value));
                         }).toList();
-                        },
-                      ),
-                      
+                        };
+                }
+            ),
                       Container(
                         height: 80.0,
                         

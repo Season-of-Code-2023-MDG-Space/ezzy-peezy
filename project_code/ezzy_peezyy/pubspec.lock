@@ -81,6 +81,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
+  dropdown_formfield:
+    dependency: "direct main"
+    description:
+      name: dropdown_formfield
+      sha256: "740b046ed3481f139b9a9ed67ec554f3d1d90a00690c98b3bbfe817a764674e6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
+  dropdown_textfield:
+    dependency: "direct main"
+    description:
+      name: dropdown_textfield
+      sha256: "6e306d29d4bf8f88e2f9a4336d5e8dcc551d797fa8f541bb52a72817cc275cc4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -168,6 +192,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  google_mlkit_commons:
+    dependency: transitive
+    description:
+      name: google_mlkit_commons
+      sha256: af63771903947d5523d9e991a939a4b8bf994f11661c9b9c8a71d7d3997115f8
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
+  google_mlkit_smart_reply:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_smart_reply
+      sha256: afa92c8dcd531f623b95687e842ed122c523d86fc1e1056030ff4e8b4d453106
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -397,6 +437,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  spell_check_on_client:
+    dependency: "direct main"
+    description:
+      name: spell_check_on_client
+      sha256: "78f91580ef241ade4758f94697a01ba14aa11555752c0754748e6b5c8586aa37"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   stack_trace:
     dependency: transitive
     description:

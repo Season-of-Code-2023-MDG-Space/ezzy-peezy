@@ -37,6 +37,10 @@ dependencies:
   google_sign_in: ^6.0.1
   notification_reader: ^1.1.1
   permission_handler: ^10.2.0
+  spell_check_on_client: ^0.0.5
+  google_mlkit_smart_reply: ^0.5.0
+  dropdown_formfield: ^0.1.4
+  dropdown_textfield: ^1.0.8  
   extension_google_sign_in_as_googleapis_auth: ^2.0.9
   workmanager: ^0.5.1  
   whatsapp_unilink: ^2.1.0
