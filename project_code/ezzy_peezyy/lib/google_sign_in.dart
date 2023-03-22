@@ -15,7 +15,7 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(
     // clientId: ClientId_android
 );
   AuthClient? client;
-  login() async {
+  Future<AuthClient?> login() async {
     //print("heh");
     //  await _googleSignIn.disconnect();
    

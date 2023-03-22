@@ -7,9 +7,8 @@ class wappcall
 {
 
 
-launchWhatsAppUri(String des) async {
-  int num = int.parse(des.substring(9, 19));  
-  String text = des.substring(32);
+launchWhatsAppUri(int num , String text) async {
+  
   // final link = WhatsAppUnilink(
   //   phoneNumber: '+91$num',
   //   text: text,
