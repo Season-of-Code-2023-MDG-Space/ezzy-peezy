@@ -18,7 +18,7 @@ class Speech {
     if(input.contains('number'))
     {
       int index = input.indexOf('number');
-      number = input.substring(index+10 , index+20);
+      number = input.substring(index+10 , index+14)+input.substring(index+15 , index+18)+input.substring(index+19 , index+22);
        if (int.tryParse(number) != null) {
           int num = int.parse(number);
        }
