@@ -36,9 +36,9 @@ class whatsReply{
        if(didYouMean == ''){didYouMean = text; }
        print(didYouMean);
         print(number);
-       if(didYouMean.contains('birthday') || didYouMean.contains('anniversary') || didYouMean.contains('congratulations'))
+       if(didYouMean.contains('birthday') || didYouMean.contains('anniversary') || didYouMean.contains('congratulations') || didYouMean.contains('congrats'))
        {try{ wc.launchWhatsAppUri(number, thanksWays[randomNumber]) ;}
-        catch(e){print("wrong no.");}
+        catch(e){print("wrong no. $e");}
        }
        
       

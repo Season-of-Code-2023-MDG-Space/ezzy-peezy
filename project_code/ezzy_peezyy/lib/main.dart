@@ -5,15 +5,16 @@ import 'package:googleapis/calendar/v3.dart' hide Colors;
 import 'package:googleapis/cloudsearch/v1.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:ezzy_peezy/speech_recognition_app/communicator.dart';
 import 'whatsReply.dart';
-import 'package:ezzy_peezy/speech_recognition_app/commands.dart';
 import 'package:ezzy_peezy/speech_recognition_app/speech.dart';
 import 'package:permission_handler/permission_handler.dart' as p;
 import 'package:workmanager/workmanager.dart';
 import 'package:ezzy_peezy/google_sign_in.dart';
 import 'wappCall.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:intl/intl.dart';
 import 'apicall.dart';
 import "package:googleapis_auth/auth_io.dart";
@@ -31,7 +32,6 @@ void main() {
 // readCalendar rc = readCalendar();
 int n = 0;
 int gg = 0;
-communicator com = communicator();
 google_sign_in g = google_sign_in();
 notif_reader nr = notif_reader();
 late AuthClient c;
@@ -46,7 +46,7 @@ void callbackDispatcher() {
       case "call_whatsapp":
         print("Reading Evdtn from calendar");
         // read();
-        await readEvents();
+         readEvents();
         print("hellooo");
         // print("$e \n");
         // print("error here");
@@ -68,6 +68,7 @@ void callbackDispatcher() {
 
 AuthClient? client;
 wappcall wc = wappcall();
+
 //  AuthClient? client ;
 
 // String getData(AuthClient cc ){
@@ -142,6 +143,22 @@ class _HomeState extends State<Home> {
   String textHint = "";
   DateTime dt = DateTime(DateTime.now().year);
   bool isListening = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
+  final String defaultLanguage = 'en-US';
+
+  TextToSpeech tts = TextToSpeech();
+
+  String text = '';
+  double volume = 1; // Range: 0-1
+  double rate = 1.0; // Range: 0-2
+  double pitch = 1.0; // Range: 0-2
+
+  String? language;
+  String? languageCode;
+  String? voice;
+
 
   void notifPermCheck() async {
     if (await p.Permission.notification.request().isDenied) {
@@ -149,9 +166,10 @@ class _HomeState extends State<Home> {
       Navigator.pushNamed(context, '/notif');
     }
   }
-
+  Speech speech = Speech();
   String val = 'Occasions';
   whatsReply wR = whatsReply();
+
   @override
   void initState() {
     dateInput.text = "";
@@ -160,11 +178,71 @@ class _HomeState extends State<Home> {
 
     callGoogleLogin();
     notifPermCheck();
-
+    _initSpeech();
     print("before Screen");
     nr.initPlatformState();
-    WidgetsBinding.instance?.addPostFrameCallback(onLayoutDone);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      initLanguages();
+    });
     super.initState();
+    
+  }
+
+  Future<void> initLanguages() async {
+    /// populate lang code (i.e. en-US)
+    languageCode = defaultLanguage;
+    language = await tts.getDisplayLanguageByCode(languageCode!);
+
+   
+    voice = await getVoiceByLang(languageCode!);
+    }
+
+    Future<String?> getVoiceByLang(String lang) async {
+    final List<String>? voices = await tts.getVoiceByLang(languageCode!);
+    if (voices != null && voices.isNotEmpty) {
+      return voices.first;
+    }
+    return null;
+  }
+  void speak(String text) async {
+    tts.setVolume(volume);
+    tts.setRate(rate);
+    if (languageCode != null) {
+      tts.setLanguage(languageCode!);
+    }
+    tts.setPitch(pitch);
+    await tts.speak(text);
+  }
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+  
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+
+
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() { 
+      List<String > data = speech.talk(_lastWords);
+       numinput.text = data[0];
+      dateInput.text = data[1];
+      _controller.text = data[2];
+      msgInput.text = "";
+
+      
+    });
+  }
+  
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+    });
   }
 
   apicall ap = apicall();
@@ -443,10 +521,7 @@ class _HomeState extends State<Home> {
           // ),
           DropdownButton(
 
-              // Initial Value
               value: val,
-
-              // Down Arrow Icon
               icon: const Icon(Icons.keyboard_arrow_down),
 
               // Array list of items
@@ -486,7 +561,7 @@ class _HomeState extends State<Home> {
                   });
                   // call Birthday fn
                   send = "Happy Anniversary ";
-                } else if (value == 'Congratulations') {
+                } else if (value == 'Congratulations') { Navigator.pushNamed(context , '/location');
                   val = 'Congratulations';
                   // call Congratulations fn
                   setState(() {
@@ -555,54 +630,19 @@ class _HomeState extends State<Home> {
                   msgInput.text = "";
                 }
               },
-              child: const Text('submit')),
+              child: const Text('submit')), 
           const SizedBox(
             height: 40.0,
           ),
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (gg == 0) {
-            // start mic
-            setState(() {
-              backgroundColor:
-              Colors.red[900];
-            });
-            toggleRecording;
-            print("inside 1st one");
-            gg = 1;
-          } else if (gg == 1) {
-            toggleRecording;
-            print("inside 2nd one");
-            setState(() {
-              backgroundColor:
-              Colors.green;
-            });
-            // stop mic
-            gg = 0;
-          }
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(
-          Icons.mic,
-        ),
+        floatingActionButton:FloatingActionButton(
+        onPressed: _speechToText.isNotListening ? _startListening : _stopListening,
+         tooltip: 'Listen',
+        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
       ),
     );
   }
 
-  String? textSample;
-  Future toggleRecording() => Speech.toggleRecording(
-      onResult: (String text) => com.talk(text),
-      onListening: (bool isListening) {
-        setState(() {
-          this.isListening = isListening;
-        });
-        if (!isListening) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            Utils.scanVoicedText(textSample!);
-          });
-        }
-      });
 }

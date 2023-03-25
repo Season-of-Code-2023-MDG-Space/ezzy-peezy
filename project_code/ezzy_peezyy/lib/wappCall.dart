@@ -1,4 +1,3 @@
-import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 // For Flutter applications, you'll most likely want to use
 // the url_launcher package.
 import 'package:url_launcher/url_launcher.dart';
