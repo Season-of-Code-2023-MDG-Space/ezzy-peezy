@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 class Speech {
   List<String> talk(String input)

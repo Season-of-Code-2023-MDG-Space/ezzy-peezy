@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 import 'dart:io';
-import 'package:clipboard/clipboard.dart';
+// import 'package:clipboard/clipboard.dart';
 import 'package:googleapis/calendar/v3.dart' hide Colors;
 import 'package:googleapis/cloudsearch/v1.dart';
 import 'dart:developer';
@@ -11,7 +11,6 @@ import 'package:permission_handler/permission_handler.dart' as p;
 import 'package:workmanager/workmanager.dart';
 import 'package:ezzy_peezy/google_sign_in.dart';
 import 'wappCall.dart';
-import 'package:text_to_speech/text_to_speech.dart';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -146,18 +145,18 @@ class _HomeState extends State<Home> {
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
-  final String defaultLanguage = 'en-US';
+  // final String defaultLanguage = 'en-US';
 
-  TextToSpeech tts = TextToSpeech();
+  // TextToSpeech tts = TextToSpeech();
 
-  String text = '';
-  double volume = 1; // Range: 0-1
-  double rate = 1.0; // Range: 0-2
-  double pitch = 1.0; // Range: 0-2
+  // String text = '';
+  // double volume = 1; // Range: 0-1
+  // double rate = 1.0; // Range: 0-2
+  // double pitch = 1.0; // Range: 0-2
 
-  String? language;
-  String? languageCode;
-  String? voice;
+  // String? language;
+  // String? languageCode;
+  // String? voice;
 
 
   void notifPermCheck() async {
@@ -181,38 +180,21 @@ class _HomeState extends State<Home> {
     _initSpeech();
     print("before Screen");
     nr.initPlatformState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      initLanguages();
-    });
+    // WidgetsBinding.instance?.addPostFrameCallback(());
     super.initState();
     
   }
 
-  Future<void> initLanguages() async {
-    /// populate lang code (i.e. en-US)
-    languageCode = defaultLanguage;
-    language = await tts.getDisplayLanguageByCode(languageCode!);
-
-   
-    voice = await getVoiceByLang(languageCode!);
-    }
-
-    Future<String?> getVoiceByLang(String lang) async {
-    final List<String>? voices = await tts.getVoiceByLang(languageCode!);
-    if (voices != null && voices.isNotEmpty) {
-      return voices.first;
-    }
-    return null;
-  }
-  void speak(String text) async {
-    tts.setVolume(volume);
-    tts.setRate(rate);
-    if (languageCode != null) {
-      tts.setLanguage(languageCode!);
-    }
-    tts.setPitch(pitch);
-    await tts.speak(text);
-  }
+ 
+  // void speak(String text) async {
+  //   tts.setVolume(volume);
+  //   tts.setRate(rate);
+  //   if (languageCode != null) {
+  //     tts.setLanguage(languageCode!);
+  //   }
+  //   tts.setPitch(pitch);
+  //   await tts.speak(text);
+  // }
 
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
@@ -235,7 +217,7 @@ class _HomeState extends State<Home> {
       _controller.text = data[2];
       msgInput.text = "";
 
-      
+
     });
   }
   
