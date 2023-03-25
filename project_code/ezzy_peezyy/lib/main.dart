@@ -256,15 +256,16 @@ class _HomeState extends State<Home> {
       callbackDispatcher,
       isInDebugMode: true,
     );
-    if (n != 0) {}
-
+    if (n != 0) {
     if (Platform.isAndroid) {
       Workmanager().registerPeriodicTask(
         "simplePeriodicTask",
         "call_whatsapp",
-        initialDelay: const Duration(seconds: 15),
-        frequency: const Duration(minutes: 15),
-      );
+        // initialDelay: const Duration(seconds: 15),
+        // frequency: const Duration(minutes: 15),
+        frequency: const Duration(days: 2),
+      );}
+
     } else {
       DateTime dt = DateTime.now();
       DateTime dt2 = DateTime(dt.year, dt.month, dt.day, 23, 59, 00);
@@ -277,7 +278,9 @@ class _HomeState extends State<Home> {
           minutes: dt2.minute - dt.minute,
           hours: dt2.hour - dt.hour,
         ),
+      
       );
+      n++;
     }
   }
 
