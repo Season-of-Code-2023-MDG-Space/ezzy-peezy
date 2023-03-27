@@ -5,13 +5,14 @@ import 'whatsReply.dart';
 class notif_reader
 {   
    Future<void> initPlatformState() async {
-    try{
+   try{
     whatsReply wR = whatsReply();
     print("inside notif_reader");
     NotificationData res = await NotificationReader.onNotificationRecieve();
     print(res.packageName);
     
     res.body ??= " ";  
+     
     if (res.body != null) 
     { print("inside resource body");
       Timer.periodic( Duration(seconds: 1) , (timer) async {
@@ -40,7 +41,9 @@ class notif_reader
       
       }
       
-    }catch(e){print("no notification error");
+    }catch(e){
+      print("no notification error $e");
+    // await NotificationReader.openNotificationReaderSettings;
     }
   }
 }

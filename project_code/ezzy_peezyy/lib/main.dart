@@ -45,7 +45,7 @@ void callbackDispatcher() {
       case "call_whatsapp":
         print("Reading Evdtn from calendar");
         // read();
-         readEvents();
+        readEvents();
         print("hellooo");
         // print("$e \n");
         // print("error here");
@@ -81,11 +81,19 @@ Future<void> readEvents() async {
   if (n == 0) {}
   DateTime startTime = DateTime.now();
   print("Entered in REad Events");
+   print(await g.isSignedIn());
 
   // client = await(g.login());
+  if(g == null)
+  { 
+
+    print("g is also null");
+  }
+
   if (client == null) {
     print("nalla client");
     client= await (g.login());
+
   }
 
   DateTime endTime = DateTime.now().add(const Duration(days: 2));
@@ -160,7 +168,8 @@ class _HomeState extends State<Home> {
 
 
   void notifPermCheck() async {
-    if (await p.Permission.notification.request().isDenied) {
+    if (await p.Permission.notification.request().isDenied) 
+    {
       // nr.initPlatformState();
       Navigator.pushNamed(context, '/notif');
     }
@@ -211,11 +220,15 @@ class _HomeState extends State<Home> {
   void _stopListening() async {
     await _speechToText.stop();
     setState(() { 
+      try{
       List<String > data = speech.talk(_lastWords);
        numinput.text = data[0];
       dateInput.text = data[1];
       _controller.text = data[2];
-      msgInput.text = "";
+      msgInput.text = "";}
+      catch(e){
+        print("incomplete data");
+      }
 
 
     });
@@ -262,8 +275,8 @@ class _HomeState extends State<Home> {
         "simplePeriodicTask",
         "call_whatsapp",
         // initialDelay: const Duration(seconds: 15),
-        // frequency: const Duration(minutes: 15),
-        frequency: const Duration(days: 2),
+        frequency: const Duration(minutes: 15),
+        // frequency: const Duration(days: 2),
       );}
 
     } else {
