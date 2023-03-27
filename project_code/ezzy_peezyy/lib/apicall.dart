@@ -16,7 +16,7 @@ class apicall  {
   // ignore: prefer_typing_uninitialized_variables
   var _credentials;
   
-   void apiCall(DateTime dt , AuthClient clientt , String send) async {
+   Future<String> apiCall(DateTime dt , AuthClient clientt , String send) async {
   //   cred c =  cred();
   //   print("inside apiCall");
   //   if (Platform.isAndroid) {
@@ -52,7 +52,7 @@ class apicall  {
       event.description = send;
 
         insertEvent(event , clientt);
-
+  return "s";
 }
 insertEvent(event ,client) async{
 try {
@@ -72,6 +72,7 @@ try {
       } catch (e) {
         log('Error creating event $e');
       }
+
 }
 
 
